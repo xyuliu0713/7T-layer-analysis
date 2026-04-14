@@ -1,0 +1,71 @@
+% 初始化 SPM
+spm('Defaults','fMRI');
+spm_jobman('initcfg');
+
+% === 文件路径 ===
+fmriFile = '/Users/molin/Downloads/tangdu_hosp/finished/data/topup/AP_corrected.nii';
+T1File   = '/Users/molin/Downloads/tangdu_hosp/finished/data/Temp_template0.nii';
+
+outputDir = '/Users/molin/Downloads/tangdu_hosp/finished/data/Realigned';
+if ~exist(outputDir,'dir')
+    mkdir(outputDir);
+end
+
+% === Realignment configuration ===
+realignmentConfiguration = [];
+realignmentConfiguration.quality = 1;
+realignmentConfiguration.sep = 1;
+realignmentConfiguration.rtm = 1;
+realignmentConfiguration.interp = 4;
+realignmentConfiguration.fwhm = 1;
+
+% ================================
+% Step 1: REALIGN（Rigid）
+% ================================
+niftisToAlign = {fmriFile};
+
+spm_realign(niftisToAlign, realignmentConfiguration);
+spm_reslice(niftisToAlign, realignmentConfiguration);
+
+% ================================
+% Step 2: 找 mean functional
+% ================================
+[fmriFolder,~,~] = fileparts(fmriFile);
+meanFunctional = dir(fullfile(fmriFolder, 'mean*.nii'));
+
+meanFuncPath = fullfile(meanFunctional.folder, meanFunctional.name);
+
+% ================================
+% Step 3: COREG（T1 → EPI）
+% ================================
+matlabbatch = [];
+
+matlabbatch{1}.spm.spatial.coreg.estwrite.ref = {meanFuncPath};
+matlabbatch{1}.spm.spatial.coreg.estwrite.source = {T1File};
+matlabbatch{1}.spm.spatial.coreg.estwrite.other = {''};
+
+matlabbatch{1}.spm.spatial.coreg.estwrite.eoptions.cost_fun = 'nmi';
+matlabbatch{1}.spm.spatial.coreg.estwrite.eoptions.sep = [4 2];
+matlabbatch{1}.spm.spatial.coreg.estwrite.eoptions.tol = ...
+    [0.02 0.02 0.02 0.001 0.001 0.001 0.01 0.01 0.01 0.001 0.001 0.001];
+matlabbatch{1}.spm.spatial.coreg.estwrite.eoptions.fwhm = [7 7];
+
+matlabbatch{1}.spm.spatial.coreg.estwrite.roptions.interp = 4;
+matlabbatch{1}.spm.spatial.coreg.estwrite.roptions.wrap = [0 0 0];
+matlabbatch{1}.spm.spatial.coreg.estwrite.roptions.mask = 0;
+matlabbatch{1}.spm.spatial.coreg.estwrite.roptions.prefix = 'r';
+
+spm_jobman('run', matlabbatch);
+
+% ================================
+% Step 4: 移动结果
+% ================================
+movefile(meanFuncPath, fullfile(outputDir,'meanFunctional.nii'));
+
+rFiles = dir(fullfile(fmriFolder, 'r*.nii'));
+for i = 1:length(rFiles)
+    movefile(fullfile(rFiles(i).folder, rFiles(i).name), outputDir);
+end
+
+movefile(fullfile(fmriFolder, '*.mat'), outputDir);
+movefile(fullfile(fmriFolder, 'rp*.txt'), outputDir);

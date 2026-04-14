@@ -1,0 +1,20 @@
+#!/bin/bash
+
+cd /Users/molin/Downloads/tangdu_hosp/finished/Freesurfer_hires/surf
+
+freeview -f lh.inflated:curvature=on
+
+export SUBJECTS_DIR=/Users/molin/Downloads/tangdu_hosp/finished/Freesurfer_hires
+
+freeview \
+-v $SUBJECTS_DIR/mri/brainmask.mgz \
+-v $SUBJECTS_DIR/mri/wm.mgz:colormap=heat:opacity=0.4 \
+-f $SUBJECTS_DIR/surf/lh.white:edgecolor=yellow \
+-f $SUBJECTS_DIR/surf/lh.pial:edgecolor=red \
+-f $SUBJECTS_DIR/surf/rh.white:edgecolor=yellow \
+-f $SUBJECTS_DIR/surf/rh.pial:edgecolor=red
+
+
+freeview \
+$SUBJECTS_DIR/mri/T1.mgz \
+$SUBJECTS_DIR/mri/wm.mgz

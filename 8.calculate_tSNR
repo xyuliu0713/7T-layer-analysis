@@ -1,0 +1,52 @@
+disp('after alignment')
+
+realignDir = '/Users/molin/Downloads/tangdu_hosp/finished/data/Realigned';
+
+% -------------------------
+% BEFORE alignment (single file)
+% -------------------------
+functionalFile = '/Users/molin/Downloads/tangdu_hosp/finished/data/topup/AP_corrected.nii';
+
+V = spm_vol(functionalFile);
+Y = spm_read_vols(V);
+Y = reshape(Y, numel(Y(:,:,:,1)), size(Y,4));
+
+meanData = mean(Y,2);
+selVox = meanData > 0.8 * mean(meanData);
+Y = Y(selVox,:);
+
+tSNR_before = mean(mean(Y,2) ./ std(Y,0,2));
+
+% -------------------------
+% AFTER alignment (realigned folder)
+% -------------------------
+EPIs = dir(fullfile(realignDir,'*.nii'));
+
+tSNR_after = zeros(1,length(EPIs));
+
+for i = 1:length(EPIs)
+
+    fprintf('Currently on run %s\n', EPIs(i).name);
+
+    functionalFile = fullfile(EPIs(i).folder, EPIs(i).name);
+
+    V = spm_vol(functionalFile);
+    Y = spm_read_vols(V);
+    Y = reshape(Y, numel(Y(:,:,:,1)), size(Y,4));
+
+    meanData = mean(Y,2);
+    selVox = meanData > 0.8 * mean(meanData);
+    Y = Y(selVox,:);
+
+    mu = mean(Y,2);
+    sigma = std(Y,0,2);
+    
+    valid = (sigma > 1e-6) & isfinite(mu) & isfinite(sigma);
+    
+    tSNR_after(i) = mean(mu(valid) ./ sigma(valid));
+    
+end
+
+fprintf('tSNR before realignment: %g\n', tSNR_before);
+fprintf('tSNR after realignment: %g\n', mean(tSNR_after));
+

@@ -1,0 +1,145 @@
+disp('Head motion QC')
+
+doPlots = true;
+
+% === 路径 ===
+realignFolder = '/Users/molin/Downloads/tangdu_hosp/finished/data/Realigned';
+
+RPfiles = dir(fullfile(realignFolder, 'rp_*.txt'));
+nRuns = length(RPfiles);
+
+% === 结果预分配 ===
+mean_head_motion = zeros(1, nRuns);
+max_head_motion = zeros(1, nRuns);
+number_head_motions = zeros(1, nRuns);
+
+all_max_head_motion = zeros(1, nRuns);
+all_mean_head_motion = zeros(1, nRuns);
+all_number_head_motions = zeros(1, nRuns);
+
+%% =========================
+%  PART 1: within-run motion
+% =========================
+for iFile = 1:nRuns
+
+    motionFile = fullfile(realignFolder, RPfiles(iFile).name);
+
+    fid = fopen(motionFile,'r');
+    if fid == -1
+        error('Cannot open file: %s', motionFile);
+    end
+
+    rp = fscanf(fid,' %e %e %e %e %e %e',[6,inf])';
+    fclose(fid);
+
+    % motion derivatives (translation only)
+    dmot = diff(rp(:,1:3));
+
+    % calculate the mean and max absolute derivative for each session
+    mean_head_motion(iFile) = max(mean(abs(diff(rp(:,1:3)))));
+    max_head_motion(iFile) = max(max(abs(diff(rp(:,1:3)))));
+    %number_head_motions(iFile) = max(sum(abs(diff(rp(:,1:3))) > 1.5));
+    number_head_motions(iFile) = max(sum(abs(diff(rp(:,1:3))) > 1.0));
+
+    % ===== plotting =====
+    if doPlots
+        hf = figure('Position', get(0,'ScreenSize'));
+        set(hf,'Color','w');
+
+        subplot(2,1,1);
+        plot(rp(:,1:3));
+        title(sprintf('Translation', iFile), 'FontSize', 18);
+        ylabel('mm'); xlabel('Scan');
+        legend('x','y','z');
+        grid on;
+
+        subplot(2,1,2);
+        plot(rp(:,4:6));
+        title('Rotation', 'FontSize', 18);
+        ylabel('deg'); xlabel('Scan');
+        legend('pitch','roll','yaw');
+        grid on;
+
+        drawnow;
+        pause(0.2);
+
+        figname = fullfile(realignFolder, ...
+            sprintf('realignment_run_%02d.jpg', iFile));
+
+        saveas(hf, figname);
+        close(hf);
+    end
+
+    % ===== extend regressors =====
+    R = rp;
+    R(:,7:12) = [zeros(1,6); diff(R)];
+    R(:,13:18) = R(:,7:12).^2;
+
+    motRegrFile = fullfile(realignFolder, ...
+        sprintf('rp_extended_run_%02d.mat', iFile));
+
+    save(motRegrFile, 'R');
+end
+
+%% =========================
+%  summary
+% =========================
+disp('====================')
+disp('Within-run summary')
+
+fprintf('Max head motion: %.4f\n', max(max_head_motion));
+fprintf('Mean head motion: %.4f\n', mean(mean_head_motion));
+fprintf('Runs with motion > 1mm events: %d\n', sum(number_head_motions));
+
+%% =========================
+%  PART 2: across-session motion (MAT files)
+% =========================
+MATfiles = dir(fullfile(realignFolder, 'Run_*.mat'));
+
+concatMat = [];
+
+for iMAT = 1:length(MATfiles)
+
+    load(fullfile(MATfiles(iMAT).folder, MATfiles(iMAT).name));
+
+    concatMat = cat(3, concatMat, mat);
+end
+
+% compute relative motion
+rp = zeros(6, size(concatMat,3));
+
+for iVol = 2:size(concatMat,3)
+
+    matDiff = concatMat(:,:,iVol) / concatMat(:,:,1);
+
+    rp(1:3,iVol) = matDiff(1:3,4);
+    rp(4,iVol)   = matDiff(2,3);
+    rp(5,iVol)   = matDiff(1,3);
+    rp(6,iVol)   = matDiff(1,2);
+end
+
+
+maxHeadChange_from1st = max(abs(rp(1:3,:)),[],'all');
+
+fprintf('Max change from 1st scan: %.4f\n', maxHeadChange_from1st);
+
+% mean-center
+for i = 1:3
+    rp(i,:) = rp(i,:) - mean(rp(i,:));
+end
+
+maxHeadChange_fromMea = max(max(abs(rp(1:3,:))));
+
+fprintf('Max change from mean: %.4f\n', maxHeadChange_fromMean);
+
+%% =========================
+%  FINAL TABLE OUTPUT
+% =========================
+DataTable = table( ...
+    string({RPfiles.name})', ...
+    max_head_motion', ...
+    number_head_motions', ...
+    mean_head_motion', ...
+    'VariableNames', {'Run','MaxMotion','NumEvents','MeanMotion'} );
+
+disp(DataTable);

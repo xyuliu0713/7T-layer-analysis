@@ -1,0 +1,46 @@
+#!/bin/bash
+
+AP=/Users/molin/Downloads/tangdu_hosp/finished/data/CMRR_MBEP2D_BOLD_AP_0009_cmrr_mbep2d_bold_AP_20260125154733_9.nii
+PA=/Users/molin/Downloads/tangdu_hosp/finished/data/CMRR_MBEP2D_BOLD_PA_0010_cmrr_mbep2d_bold_PA_20260125154733_10.nii
+OUTDIR=/Users/molin/Downloads/tangdu_hosp/finished/data/topup
+mkdir -p $OUTDIR
+
+# === Step 1: 取前5个volume ===
+fslroi $AP $OUTDIR/AP_5.nii 0 5
+fslroi $PA $OUTDIR/PA_5.nii 0 5
+
+# === Step 2: 合并 ===
+fslmerge -t $OUTDIR/APPA.nii $OUTDIR/AP_5.nii $OUTDIR/PA_5.nii
+
+# === Step 3: acqparams ===
+cat <<EOF > $OUTDIR/acqparams.txt
+0 -1 0 0.05
+0 -1 0 0.05
+0 -1 0 0.05
+0 -1 0 0.05
+0 -1 0 0.05
+0 1 0 0.05
+0 1 0 0.05
+0 1 0 0.05
+0 1 0 0.05
+0 1 0 0.05
+EOF
+
+# === Step 4: TOPUP ===
+topup \
+--imain=$OUTDIR/APPA.nii \
+--datain=$OUTDIR/acqparams.txt \
+--config=b02b0.cnf \
+--subsamp=1 \
+--miter=5 \
+--out=$OUTDIR/topup_results \
+--iout=$OUTDIR/topup_corrected
+
+# === Step 5: 应用到整个AP ===
+applytopup \
+--imain=$AP \
+--datain=$OUTDIR/acqparams.txt \
+--inindex=1 \
+--topup=$OUTDIR/topup_results \
+--out=$OUTDIR/AP_corrected \
+--method=jac

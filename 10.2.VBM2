@@ -1,0 +1,46 @@
+#!/bin/bash
+
+export SUBJECTS_DIR=/Users/molin/Downloads/tangdu_hosp/finished/data
+cd /Users/molin/Downloads/tangdu_hosp/finished/data/Coregistrations
+bbregister \
+  --s Freesurfer_hires \
+  --mov /Users/molin/Downloads/tangdu_hosp/finished/data/Realigned/meanFunctional.nii \
+  --reg /Users/molin/Downloads/tangdu_hosp/finished/data/Coregistrations/register_VolumeCoregister.dat \
+  --bold \
+  --init-fsl
+
+% check results
+tkregisterfv \
+--mov /Users/molin/Downloads/tangdu_hosp/finished/data/Realigned/meanFunctional.nii \
+--reg /Users/molin/Downloads/tangdu_hosp/finished/data/Coregistrations/register_VolumeCoregister.dat \
+--surfs \
+--sd /Users/molin/Downloads/tangdu_hosp/finished/data
+
+
+% The matlab code cannot be run because it relies on bbregister flag in FreeSurfer
+%clear; close all; clc;
+% 
+% 
+% setenv('FREESURFER_HOME','/Applications/freesurfer/8.1.0');
+% system('source $FREESURFER_HOME/SetUpFreeSurfer.sh');
+% 
+% % -------------------------
+% % Input files (your case)
+% % -------------------------
+% fmriFile = '/Users/molin/Downloads/tangdu_hosp/finished/data/topup/AP_corrected.nii';
+% T1File   = '/Users/molin/Downloads/tangdu_hosp/finished/data/Temp_template0.nii';
+% meanFunctional = '/Users/molin/Downloads/tangdu_hosp/finished/data/Realigned/meanFunctional.nii';
+% fsDir = '/Users/molin/Downloads/tangdu_hosp/finished/data/Freesurfer_hires';
+% 
+% subjectDir = '/Users/molin/Downloads/tangdu_hosp/finished/data';
+% 
+% addpath('/Volumes/xyu/MSc neuroimaging/project/AnalysesCode/OpenFmriAnalysis-master/Interface/Registration')
+% addpath('/Volumes/xyu/MSc neuroimaging/project/AnalysesCode/OpenFmriAnalysis-master/Core')
+% 
+% configuration = [];
+% configuration.i_SubjectDirectory = '/Users/molin/Downloads/tangdu_hosp/finished/data';
+% configuration.i_FreeSurferFolder = 'Freesurfer_hires/';
+% configuration.i_RegistrationVolume = 'Realigned/meanFunctional.nii';
+% configuration.o_CoregistrationMatrix = 'Coregistrations/Anat2FuncCoregistrationMatrix.mat';
+% configuration.o_Boundaries = 'Coregistrations/Anat2FuncBoundaries.mat';
+% configuration.o_RegisterDat = 'Coregistrations/register_VolumeCoregister.dat';

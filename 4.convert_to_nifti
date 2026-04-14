@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#Convert freesurfer output files to nifti
+
+cd /Users/molin/Downloads/tangdu_hosp/finished/Freesurfer_hires/mri
+
+
+for scan in 'brain' 'ribbon' 'orig' 'nu' 'aparc+aseg' 'wm' 'T1'
+do
+
+mri_convert ./$scan.mgz ./$scan.nii
+
+done
+
+# mask brain.nii by aparc+aseg.nii, to get rid of dura
+# first dilate aparc+aseg, to avoid holes.
+fslmaths aparc+aseg.nii -bin aparc+aseg_mask.nii
+#fslmaths aparc+aseg_mask.nii.gz -dilM aparc+aseg_mask.nii.gz
+fslmaths brain.nii -mas aparc+aseg_mask.nii.gz brain_masked.nii.gz
+gunzip brain_masked.nii.gz
+
+done

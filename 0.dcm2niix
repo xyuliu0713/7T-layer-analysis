@@ -1,0 +1,9 @@
+#!/bin/bash
+
+% Convert DICOM to NIfTI using dcm2niix
+
+dcm2niix -o /Users/molin/Downloads/tangdu_hosp/finished/data \
+/Users/molin/Downloads/tangdu_hosp/finished/OSA2026.1.24-1.25/MRI/HUANG_LV_LE_OSA0023/APP_TEST_HEAD_20260125_154733_049000/CMRR_MBEP2D_BOLD_AP_0009
+
+dcm2niix -o /Users/molin/Downloads/tangdu_hosp/finished/data \
+/Users/molin/Downloads/tangdu_hosp/finished/OSA2026.1.24-1.25/MRI/HUANG_LV_LE_OSA0023/APP_TEST_HEAD_20260125_154733_049000/CMRR_MBEP2D_BOLD_PA_0010
