@@ -1,0 +1,18 @@
+% backup Freesurfer
+
+rootDir = '/Users/molin/Downloads/tangdu_hosp/finished/data';
+subjectDir = '/Users/molin/Downloads/tangdu_hosp/finished/data';
+
+addpath('/Volumes/xyu/MSc neuroimaging/project/AnalysesCode/OpenFmriAnalysis-master/Interface/Registration')
+addpath('/Volumes/xyu/MSc neuroimaging/project/AnalysesCode/OpenFmriAnalysis-master/Core')
+
+configuration = [];
+configuration.i_SubjectDirectory = rootDir;
+configuration.i_Files = {'Freesurfer/surf/lh.white', 'Freesurfer/surf/lh.pial', 'Freesurfer/surf/lh.orig',...
+                        'Freesurfer/surf/rh.white', 'Freesurfer/surf/rh.pial', 'Freesurfer/surf/rh.orig'};
+configuration.p_Suffix = '_backup';
+
+tvm_backupFiles(configuration);
+tvm_restoreBackupFiles(configuration);
+
+clear configuration;

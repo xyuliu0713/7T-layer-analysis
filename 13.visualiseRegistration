@@ -1,0 +1,12 @@
+% functional 对齐到 FreeSurfer 的 orig.mgz, 并叠加 surface
+
+export SUBJECTS_DIR=/Users/molin/Downloads/tangdu_hosp/finished/data
+referenceVolume=$SUBJECTS_DIR/Realigned/meanFunctional.nii
+registerDat=$SUBJECTS_DIR/Coregistrations/register_BBR.dat
+
+
+freeview \
+  -v "$SUBJECTS_DIR/Freesurfer/mri/orig.mgz" \
+  -v "${referenceVolume}:reg=${registerDat}:colormap=heat:opacity=0.4" \
+  -f "$SUBJECTS_DIR/Freesurfer/surf/lh.white":edgecolor=blue \
+     "$SUBJECTS_DIR/Freesurfer/surf/rh.white":edgecolor=red

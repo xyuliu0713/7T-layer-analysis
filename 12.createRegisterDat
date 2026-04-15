@@ -1,0 +1,17 @@
+% Generate register_BBR.dat
+
+rootDir = '/Users/molin/Downloads/tangdu_hosp/finished/data';
+subjectDir = '/Users/molin/Downloads/tangdu_hosp/finished/data';
+
+addpath('/Volumes/xyu/MSc neuroimaging/project/AnalysesCode/OpenFmriAnalysis-master/Interface/Registration')
+addpath('/Volumes/xyu/MSc neuroimaging/project/AnalysesCode/OpenFmriAnalysis-master/Core')
+
+configuration = [];
+configuration.i_SubjectDirectory = rootDir;
+configuration.i_ReferenceVolume = 'Realigned/meanFunctional.nii';
+configuration.i_MoveVolume = 'Freesurfer_hires/mri/brain.nii';
+configuration.i_CoregistrationMatrix = 'Coregistrations/Anat2FuncCoregistrationMatrix_BBR.mat';
+configuration.o_RegisterDat = 'Coregistrations/register_BBR.dat';
+
+tvm_matrixToRegisterDat(configuration);
+clear configuration;

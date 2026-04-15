@@ -1,0 +1,119 @@
+scaleF = 2;
+
+registrationConfiguration = [];
+registrationConfiguration.ReverseContrast       = true;
+registrationConfiguration.ContrastMethod        = 'gradient';
+registrationConfiguration.OptimisationMethod    = 'GreveFischl';
+
+
+
+configuration = [];
+subjectDirectory = fullfile(rootDir);
+functional = spm_vol(fullfile(subjectDirectory, 'Realigned', 'meanFunctional.nii'));
+
+configuration.i_Volume = spm_read_vols(functional);
+volDims = size(configuration.i_Volume);
+%configuration.i_ColorLimits = [0 0.6*max(configuration.i_Volume(:))];
+
+coregBoundariesFile = fullfile(subjectDirectory, 'Coregistrations', 'Anat2FuncBoundaries.mat');
+bbrBoundariesFile = fullfile(subjectDirectory, 'Coregistrations', 'Anat2FuncBoundaries_BBR.mat');
+recursBoundariesFile = fullfile(subjectDirectory, 'Coregistrations', 'Anat2FuncBoundaries_recurs.mat');
+
+imageCount = 1;
+for i = 4:40
+    
+
+    selZslice = i;
+    selXslice = 44+(i*2);
+    %figure('Units','pixels','Position',[0 0 1800 1200])
+    figure;
+    
+    configuration.i_Axis = 'x';
+    configuration.i_Slice = selXslice;
+    
+    load(bbrBoundariesFile, 'wSurface', 'pSurface', 'faceData');
+    
+    % calculate average contrast across WM/GM boundary
+    registeredSurfaceW = [wSurface{1}; wSurface{2}];
+    registeredSurfaceP = [pSurface{1}; pSurface{2}];
+    c_rigid(SID) = tvm_contrastAverage([], registeredSurfaceW, registeredSurfaceP, configuration.i_Volume, [], registrationConfiguration) / length(registeredSurfaceW);
+    
+    configuration.i_Vertices{1} = wSurface;
+    configuration.i_Vertices{2} = pSurface;
+    configuration.i_Faces{1} = faceData;
+    configuration.i_Faces{2} = faceData;
+    subplot(2,2,1)
+    tvm_showObjectContourOnSlice(configuration);
+    title(sprintf('%s, BBR, c = %0.2g', c_rigid(SID)))
+    set(gca, 'YDir', 'normal');
+    truesize(scaleF*volDims([3 2]))
+    
+    load(recursBoundariesFile, 'wSurface', 'pSurface', 'faceData');
+    
+    % calculate average contrast across WM/GM boundary
+    registeredSurfaceW = [wSurface{1}; wSurface{2}];
+    registeredSurfaceP = [pSurface{1}; pSurface{2}];
+    c_recurs(SID) = tvm_contrastAverage([], registeredSurfaceW, registeredSurfaceP, configuration.i_Volume, [], registrationConfiguration) / length(registeredSurfaceW);
+    
+    configuration.i_Vertices{1} = wSurface;
+    configuration.i_Vertices{2} = pSurface;
+    configuration.i_Faces{1} = faceData;
+    configuration.i_Faces{2} = faceData;
+    subplot(2,2,2)
+    tvm_showObjectContourOnSlice(configuration);
+    title(sprintf('%s, RBR, c = %0.2g', c_recurs(SID)))
+    set(gca, 'YDir', 'normal');
+    truesize(scaleF*volDims([3 2]))
+    
+    configuration.i_Axis = 'z';
+    configuration.i_Slice = selZslice;
+    
+    load(bbrBoundariesFile, 'wSurface', 'pSurface', 'faceData');
+    configuration.i_Vertices{1} = wSurface;
+    configuration.i_Vertices{2} = pSurface;
+    configuration.i_Faces{1} = faceData;
+    configuration.i_Faces{2} = faceData;
+    subplot(2,2,3)
+    tvm_showObjectContourOnSlice(configuration);
+    %title(sprintf('BBR, c = %0.2g', c_rigid(SID)))
+    set(gca, 'YDir', 'normal');
+    truesize(scaleF*volDims([1 2]))
+    
+    load(recursBoundariesFile, 'wSurface', 'pSurface', 'faceData');
+    configuration.i_Vertices{1} = wSurface;
+    configuration.i_Vertices{2} = pSurface;
+    configuration.i_Faces{1} = faceData;
+    configuration.i_Faces{2} = faceData;
+    subplot(2,2,4)
+    tvm_showObjectContourOnSlice(configuration);
+    %title(sprintf('RBR, c = %0.2g', c_recurs(SID)))
+    set(gca, 'YDir', 'normal');
+    truesize(scaleF*volDims([1 2]))
+    %saveas(gcf,['/media/sf_D_DRIVE/Data/Hallucinations_7T_pilot/Subject_data/' subjects{SID} '/Recursive' subjects{SID} '.png'])
+    %clear configuration;
+    gifName = [rootDir '/Subject_data/' '/RecursiveRegistration' '.gif'];
+    %set(gcf,'color','w');
+    
+    % Save currrent slice to GIF
+    frame = getframe(gcf);
+    im = frame2im(frame);
+    [imind,cm] = rgb2ind(im,256);
+    delaytime = .1
+    if imageCount == 1
+        imwrite(imind,cm,gifName,'gif','Loopcount',inf,'DelayTime',delaytime);
+    else
+        imwrite(imind,cm,gifName,'gif','WriteMode','append','DelayTime',delaytime);
+    end
+    imageCount = imageCount+1;
+    close all
+end
+    
+
+mean(c_rigid)
+std(c_rigid)
+
+mean(c_recurs)
+std(c_recurs)
+
+mean(c_recurs ./ c_rigid)
+std(c_recurs ./ c_rigid)

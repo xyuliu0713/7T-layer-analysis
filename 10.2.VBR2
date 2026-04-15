@@ -3,7 +3,7 @@
 export SUBJECTS_DIR=/Users/molin/Downloads/tangdu_hosp/finished/data
 cd /Users/molin/Downloads/tangdu_hosp/finished/data/Coregistrations
 bbregister \
-  --s Freesurfer_hires \
+  --s Freesurfer \
   --mov /Users/molin/Downloads/tangdu_hosp/finished/data/Realigned/meanFunctional.nii \
   --reg /Users/molin/Downloads/tangdu_hosp/finished/data/Coregistrations/register_VolumeCoregister.dat \
   --bold \

@@ -1,0 +1,29 @@
+% Realignment configuration - using settings from petkok's code, assuming they are fine...
+
+rootDir = '/Users/molin/Downloads/tangdu_hosp/finished/data';
+subjectDir = '/Users/molin/Downloads/tangdu_hosp/finished/data';
+
+addpath('/Volumes/xyu/MSc neuroimaging/project/AnalysesCode/OpenFmriAnalysis-master/Interface/Registration')
+addpath('/Volumes/xyu/MSc neuroimaging/project/AnalysesCode/OpenFmriAnalysis-master/Core')
+
+configuration = [];
+configuration.i_SubjectDirectory = rootDir;
+configuration.i_ReferenceVolume = 'Realigned/meanFunctional.nii';
+configuration.i_Boundaries = 'Coregistrations/Anat2FuncBoundaries_BBR.mat';
+configuration.o_Boundaries = 'Coregistrations/Anat2FuncBoundaries_recurs.mat';
+
+registrationConfiguration = [];
+registrationConfiguration.ReverseContrast       = true;
+registrationConfiguration.ContrastMethod        = 'gradient';
+registrationConfiguration.OptimisationMethod    = 'GreveFischl';
+registrationConfiguration.Mode                  = 'rsyt'; %'rsxt'
+registrationConfiguration.NumberOfIterations    = 6; % 6 = default, 8 = recommended for whole brain.
+registrationConfiguration.Accuracy              = 30;
+registrationConfiguration.DynamicAccuracy       = true;
+registrationConfiguration.MultipleLoops         = true;
+registrationConfiguration.qsub                  = false;
+registrationConfiguration.Display              	= 'on';
+
+tvm_recursiveBoundaryRegistration(configuration,registrationConfiguration);
+      
+clear configuration registrationConfiguration; 
