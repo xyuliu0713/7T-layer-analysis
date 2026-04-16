@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd /Users/molin/Downloads/tangdu_hosp/finished/data            
+freeview Realigned/meanFunctional.nii LevelSets/Layering.nii:colormap=jet
