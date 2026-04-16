@@ -14,6 +14,7 @@ subjectDir = '/Users/molin/Downloads/tangdu_hosp/finished/data';
 
 addpath('/Volumes/xyu/MSc neuroimaging/project/AnalysesCode/OpenFmriAnalysis-master/Interface/Registration')
 addpath('/Volumes/xyu/MSc neuroimaging/project/AnalysesCode/OpenFmriAnalysis-master/Core')
+addpath('/Volumes/xyu/MSc neuroimaging/project/AnalysesCode/OpenFmriAnalysis-master/Development')
 
 configuration = [];
 configuration.i_SubjectDirectory = rootDir;

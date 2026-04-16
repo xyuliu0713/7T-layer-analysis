@@ -1,3 +1,5 @@
+% generate layering.nii
+
 addpath('/Volumes/xyu/MSc neuroimaging/project/AnalysesCode/OpenFmriAnalysis-master/Interface/LaminarAnalysis');
 addpath('/Volumes/xyu/MSc neuroimaging/project/AnalysesCode/OpenFmriAnalysis-master/Interface/Registration');
 addpath('/Volumes/xyu/MSc neuroimaging/project/AnalysesCode/OpenFmriAnalysis-master/Core');

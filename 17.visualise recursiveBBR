@@ -1,4 +1,5 @@
-%generate RecursiveRegistration.gif
+% generate RecursiveRegistration.gif
+
 addpath('/Volumes/xyu/MSc neuroimaging/project/AnalysesCode/Phase2_registrations/registrationContrastFunctions')
 scaleF = 2;
 
