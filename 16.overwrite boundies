@@ -1,5 +1,14 @@
 % Overwrite freesurfer boundaries with results of recursive boundary registration
-
+% comment out below in tvm_boundariesToFreesurferFile
+    % fileName = strrep(whiteFile, '?', prefix);
+    % tvm_saveFreesurferAsciiFile(wSurface{hemisphere}, faceData{hemisphere}, [fileName '.asc']); %#ok<USENS>
+    % unix(['mris_convert ' fileName '.asc ' fileName]);
+    % unix(['rm ' fileName '.asc']);
+    % 
+    % fileName = strrep(pialFile, '?', prefix);
+    % tvm_saveFreesurferAsciiFile(pSurface{hemisphere}, faceData{hemisphere}, [fileName '.asc']); 
+    % unix(['mris_convert ' fileName '.asc ' fileName]);
+    % unix(['rm ' fileName '.asc']);
 rootDir = '/Users/molin/Downloads/tangdu_hosp/finished/data';
 subjectDir = '/Users/molin/Downloads/tangdu_hosp/finished/data';
 

@@ -1,8 +1,9 @@
 #!/bin/bash
 
-cd /Users/molin/Downloads/tangdu_hosp/finished/data/Freesurfer_hires/surf
+cd /Users/molin/Downloads/tangdu_hosp/finished/data/Freesurfer/surf
 
 mris_convert lh.white lh.white.asc
 mris_convert rh.white rh.white.asc
 mris_convert lh.pial lh.pial.asc
 mris_convert rh.pial rh.pial.asc
+

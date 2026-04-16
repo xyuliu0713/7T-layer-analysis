@@ -2,7 +2,7 @@
 
 export SUBJECTS_DIR="/Users/molin/Downloads/tangdu_hosp/finished"
 T1_FILE="/Users/molin/Downloads/tangdu_hosp/finished/data/Temp_template0.nii"
-SUBJECT_ID="Freesurfer_hires"
+SUBJECT_ID="Freesurfer"
 
 export FREESURFER_HOME=/Applications/freesurfer/8.1.0
 source $FREESURFER_HOME/SetUpFreeSurfer.sh

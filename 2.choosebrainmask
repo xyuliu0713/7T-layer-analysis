@@ -5,6 +5,6 @@
 export FREESURFER_HOME=/Applications/freesurfer/8.1.0
 source $FREESURFER_HOME/SetUpFreeSurfer.sh
 
-cd /Users/molin/Downloads/tangdu_hosp/finished/Freesurfer_hires/mri
+cd /Users/molin/Downloads/tangdu_hosp/finished/Freesurfer/mri
 freeview -v T1.mgz \            
          -v brainmask.mgz:colormap=heat:opacity=0.4

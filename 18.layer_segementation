@@ -1,73 +1,41 @@
-rootDir = '/Users/molin/Downloads/tangdu_hosp/finished/Freesurfer_hires';
-% addpath('/Users/molin/Downloads/tangdu_hosp/finished/AnalysesCode/OpenFmriAnalysis-master/Interface/LaminarAnalysis')
-addpath(genpath('/Users/molin/Downloads/tangdu_hosp/finished/AnalysesCode/OpenFmriAnalysis-master/'))
+addpath('/Volumes/xyu/MSc neuroimaging/project/AnalysesCode/OpenFmriAnalysis-master/Interface/LaminarAnalysis');
+addpath('/Volumes/xyu/MSc neuroimaging/project/AnalysesCode/OpenFmriAnalysis-master/Interface/Registration');
+addpath('/Volumes/xyu/MSc neuroimaging/project/AnalysesCode/OpenFmriAnalysis-master/Core');
 
-disp('Processing single subject');
+disp('Processing ');
+    
+rootDir = '/Users/molin/Downloads/tangdu_hosp/finished/data';
+
+addpath('/Volumes/xyu/MSc neuroimaging/project/AnalysesCode/OpenFmriAnalysis-master/Interface/Registration')
+addpath('/Volumes/xyu/MSc neuroimaging/project/AnalysesCode/OpenFmriAnalysis-master/Core')
 
 configuration = [];
-
-% =============================
-% 路径（直接用 rootDir）
-% =============================
 configuration.i_SubjectDirectory = rootDir;
+configuration.i_Boundaries = 'Coregistrations/Anat2FuncBoundaries_recurs.mat';
+configuration.o_ObjWhite = 'Freesurfer/surf/?h.white.reg.obj';
+configuration.o_ObjPial = 'Freesurfer/surf/?h.pial.reg.obj';
 
-% =============================
-% ✅ T1 作为 reference
-% =============================
-configuration.i_ReferenceVolume = 'mri/T1.nii';
-
-% =============================
-% ✅ surface（原始，不是.reg）
-% =============================
-configuration.i_ObjWhite = 'surf/?h.white';
-configuration.i_ObjPial  = 'surf/?h.pial';
-
-configuration.o_ObjWhite = 'surf/?h.white.obj';
-configuration.o_ObjPial  = 'surf/?h.pial.obj';
-
-% =============================
-% ❌ 无 functional
-% =============================
-configuration.i_Boundaries = '';
-
-% =============================
-% SDF
-% =============================
+configuration.i_ReferenceVolume = 'Realigned/meanFunctional.nii';
+configuration.i_ObjWhite = 'Freesurfer/surf/?h.white.reg.obj';
+configuration.i_ObjPial = 'Freesurfer/surf/?h.pial.reg.obj';
 configuration.o_SdfWhite = 'LevelSets/?h.white.sdf.nii';
 configuration.o_SdfPial  = 'LevelSets/?h.pial.sdf.nii';
-
 configuration.o_White  = 'LevelSets/brain.white.sdf.nii';
-configuration.o_Pial   = 'LevelSets/brain.pial.sdf.nii';
+configuration.o_Pial  = 'LevelSets/brain.pial.sdf.nii';
 
-% =============================
-% Laplace
-% =============================
 configuration.i_b0  = 'LevelSets/brain.pial.sdf.nii';
 configuration.i_b1  = 'LevelSets/brain.white.sdf.nii';
-
 configuration.o_LaplacePotential = 'LevelSets/LaplacePotential.nii';
 
-% =============================
-% 几何信息
-% =============================
-configuration.o_Gradient  = 'LevelSets/Gradient.nii';
+configuration.o_Gradient = 'LevelSets/Gradient.nii';
 configuration.o_Curvature = 'LevelSets/Curvature.nii';
-
+   
 configuration.i_White  = 'LevelSets/brain.white.sdf.nii';
-configuration.i_Pial   = 'LevelSets/brain.pial.sdf.nii';
+configuration.i_Pial  = 'LevelSets/brain.pial.sdf.nii';
 
-% =============================
-% ✅ layers
-% =============================
-% configuration.i_Levels = linspace(0,1,7);
 configuration.i_Levels = 0:1/3:1;
-
 configuration.o_Layering = 'LevelSets/Layering.nii';
 configuration.o_LevelSet = 'LevelSets/LevelSet.nii';
 
-% =============================
-% 运行
-% =============================
 tvm_layerPipeline(configuration);
-
 clear configuration

@@ -1,10 +1,10 @@
 #!/bin/bash
 
-cd /Users/molin/Downloads/tangdu_hosp/finished/Freesurfer_hires/surf
+cd /Users/molin/Downloads/tangdu_hosp/finished/Freesurfer/surf
 
 freeview -f lh.inflated:curvature=on
 
-export SUBJECTS_DIR=/Users/molin/Downloads/tangdu_hosp/finished/Freesurfer_hires
+export SUBJECTS_DIR=/Users/molin/Downloads/tangdu_hosp/finished/Freesurfer
 
 freeview \
 -v $SUBJECTS_DIR/mri/brainmask.mgz \

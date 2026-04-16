@@ -2,7 +2,7 @@
 
 #Convert freesurfer output files to nifti
 
-cd /Users/molin/Downloads/tangdu_hosp/finished/Freesurfer_hires/mri
+cd /Users/molin/Downloads/tangdu_hosp/finished/Freesurfer/mri
 
 
 for scan in 'brain' 'ribbon' 'orig' 'nu' 'aparc+aseg' 'wm' 'T1'

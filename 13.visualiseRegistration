@@ -1,3 +1,5 @@
+#!/bin/bash
+
 % functional 对齐到 FreeSurfer 的 orig.mgz, 并叠加 surface
 
 export SUBJECTS_DIR=/Users/molin/Downloads/tangdu_hosp/finished/data

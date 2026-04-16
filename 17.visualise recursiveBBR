@@ -1,3 +1,5 @@
+%generate RecursiveRegistration.gif
+addpath('/Volumes/xyu/MSc neuroimaging/project/AnalysesCode/Phase2_registrations/registrationContrastFunctions')
 scaleF = 2;
 
 registrationConfiguration = [];
@@ -20,11 +22,13 @@ bbrBoundariesFile = fullfile(subjectDirectory, 'Coregistrations', 'Anat2FuncBoun
 recursBoundariesFile = fullfile(subjectDirectory, 'Coregistrations', 'Anat2FuncBoundaries_recurs.mat');
 
 imageCount = 1;
-for i = 4:40
-    
+volSize = size(configuration.i_Volume);   % ✅ 放在 for 循环前（只算一次）
 
-    selZslice = i;
-    selXslice = 44+(i*2);
+for i = 4:40
+
+   
+    selZslice = min(i, volSize(3));
+    selXslice = min(44 + (i*2), volSize(1));
     %figure('Units','pixels','Position',[0 0 1800 1200])
     figure;
     
@@ -36,7 +40,7 @@ for i = 4:40
     % calculate average contrast across WM/GM boundary
     registeredSurfaceW = [wSurface{1}; wSurface{2}];
     registeredSurfaceP = [pSurface{1}; pSurface{2}];
-    c_rigid(SID) = tvm_contrastAverage([], registeredSurfaceW, registeredSurfaceP, configuration.i_Volume, [], registrationConfiguration) / length(registeredSurfaceW);
+    c_rigid(i) = tvm_contrastAverage([], registeredSurfaceW, registeredSurfaceP, configuration.i_Volume, [], registrationConfiguration) / length(registeredSurfaceW);
     
     configuration.i_Vertices{1} = wSurface;
     configuration.i_Vertices{2} = pSurface;
@@ -44,7 +48,7 @@ for i = 4:40
     configuration.i_Faces{2} = faceData;
     subplot(2,2,1)
     tvm_showObjectContourOnSlice(configuration);
-    title(sprintf('%s, BBR, c = %0.2g', c_rigid(SID)))
+    title(sprintf('%s, BBR, c = %0.2g', c_rigid(i)))
     set(gca, 'YDir', 'normal');
     truesize(scaleF*volDims([3 2]))
     
@@ -53,7 +57,7 @@ for i = 4:40
     % calculate average contrast across WM/GM boundary
     registeredSurfaceW = [wSurface{1}; wSurface{2}];
     registeredSurfaceP = [pSurface{1}; pSurface{2}];
-    c_recurs(SID) = tvm_contrastAverage([], registeredSurfaceW, registeredSurfaceP, configuration.i_Volume, [], registrationConfiguration) / length(registeredSurfaceW);
+    c_recurs(i) = tvm_contrastAverage([], registeredSurfaceW, registeredSurfaceP, configuration.i_Volume, [], registrationConfiguration) / length(registeredSurfaceW);
     
     configuration.i_Vertices{1} = wSurface;
     configuration.i_Vertices{2} = pSurface;
@@ -61,7 +65,7 @@ for i = 4:40
     configuration.i_Faces{2} = faceData;
     subplot(2,2,2)
     tvm_showObjectContourOnSlice(configuration);
-    title(sprintf('%s, RBR, c = %0.2g', c_recurs(SID)))
+    title(sprintf('%s, RBR, c = %0.2g', c_recurs(i)))
     set(gca, 'YDir', 'normal');
     truesize(scaleF*volDims([3 2]))
     
@@ -91,7 +95,7 @@ for i = 4:40
     truesize(scaleF*volDims([1 2]))
     %saveas(gcf,['/media/sf_D_DRIVE/Data/Hallucinations_7T_pilot/Subject_data/' subjects{SID} '/Recursive' subjects{SID} '.png'])
     %clear configuration;
-    gifName = [rootDir '/Subject_data/' '/RecursiveRegistration' '.gif'];
+    gifName = [rootDir '/Coregistrations' '/RecursiveRegistration' '.gif'];
     %set(gcf,'color','w');
     
     % Save currrent slice to GIF
